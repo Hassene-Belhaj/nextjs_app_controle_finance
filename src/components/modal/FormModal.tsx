@@ -5,8 +5,10 @@ import { useUser } from "@clerk/nextjs";
 import { SetStateAction, useState } from "react";
 import EmojiPicker from "emoji-picker-react";
 import toast from "react-hot-toast";
-import { AiOutlineClose } from "react-icons/ai";
+// import { AiOutlineClose } from "react-icons/ai";
+
 import { motion } from "framer-motion";
+import { X } from "lucide-react";
 
 interface Imodal {
   showFormModal: boolean;
@@ -19,6 +21,9 @@ const FormModal = ({ showFormModal, setShowFormModal }: Imodal) => {
   const [myAmount, setMyAmount] = useState<string>("");
   const [emoji, setEmoji] = useState<string>("");
   const [showEmoji, setShowEmoji] = useState<boolean>(false);
+
+  const email = user?.primaryEmailAddress?.emailAddress as string;
+
   const handleAction = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -30,7 +35,7 @@ const FormModal = ({ showFormModal, setShowFormModal }: Imodal) => {
       if (!mybudget) return toast.error("entrez le nom de votre budget");
       if (!amount) return toast.error("entrez le montant de votre budget");
       await AddBudget({
-        email: user?.primaryEmailAddress?.emailAddress as string,
+        email: email,
         name: mybudget,
         amount,
         emoji,
@@ -39,7 +44,6 @@ const FormModal = ({ showFormModal, setShowFormModal }: Imodal) => {
       setMyAmount("");
       setEmoji("");
       setShowFormModal(!showFormModal);
-
       return toast.success("le budget est ajouté avec succes");
     } catch (error) {
       console.log(error);
@@ -63,7 +67,7 @@ const FormModal = ({ showFormModal, setShowFormModal }: Imodal) => {
         exit={{ opacity: 0, transition: { duration: 0.3, ease: "easeInOut" } }}
       >
         <span className="top-0 right-0 ">
-          <AiOutlineClose className="absolute top-4 right-4 cursor-pointer" onClick={() => setShowFormModal(!showFormModal)} />
+          <X className="absolute top-4 right-4 cursor-pointer text-black" onClick={() => setShowFormModal(!showFormModal)} />
         </span>
         <div className="w-full h-full bg-secondary p-8 flex flex-col justify-center items-center gap-4 bg-white text-black">
           <h3 className="py-2 w-full text-lg text-center">Creation d'un budget</h3>
@@ -80,7 +84,7 @@ const FormModal = ({ showFormModal, setShowFormModal }: Imodal) => {
                 <>
                   {emoji ? (
                     <div className="w-full bg-transparent border-2 border-secondary text-center py-4 relative rounded-full">
-                      <AiOutlineClose onClick={() => setEmoji("")} className="absolute top-1/2 right-4 -translate-y-1/2 cursor-pointer" />
+                      <X onClick={() => setEmoji("")} className="absolute top-1/2 right-4 -translate-y-1/2 cursor-pointer" />
                       {emoji}
                     </div>
                   ) : (
@@ -92,7 +96,7 @@ const FormModal = ({ showFormModal, setShowFormModal }: Imodal) => {
               ) : (
                 <div className="w-full h-full p-2 mx-auto relative">
                   <button className="px-2">
-                    <AiOutlineClose className="absolute top-2 right-2 cursor-pointer" onClick={() => setShowEmoji(!showEmoji)} />
+                    <X className="absolute top-2 right-2 cursor-pointer" onClick={() => setShowEmoji(!showEmoji)} />
                   </button>
                   <EmojiPicker width={"100%"} height={400} onEmojiClick={handleSelectEmoji}></EmojiPicker>
                 </div>

@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
-import { poppins, montserrat } from "./fonts/fonts";
+import { poppins, montserrat, roboto } from "./fonts/fonts";
 import ToasterConfig from "../utils/ToasterConfig";
 import { ThemeProvider } from "@/components/theme-provider";
 import Navbar from "@/components/header/Navbar";
+import Footer from "@/components/footer/Footer";
 
 export const metadata: Metadata = {
   title: "Budget Finance",
@@ -19,11 +20,14 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html data-theme="cupcake" lang="fr" suppressHydrationWarning>
-        <body className={`${poppins.className} antialiased min-w-[300px]`}>
+        <body className={`${roboto.className} antialiased min-w-[300px]`}>
           <ToasterConfig />
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-            <Navbar />
-            {children}
+            <div className="max-w-[1920px] m-auto">
+              <Navbar />
+              {children}
+              <Footer />
+            </div>
           </ThemeProvider>
         </body>
       </html>

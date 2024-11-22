@@ -1,16 +1,10 @@
 "use client";
 import { IBudget, Itransaction } from "@/utils/TypesTs";
 import BudgetItemCard from "./BudgetItemCard";
-import { FaTrash } from "react-icons/fa";
 import { FormEvent, useState } from "react";
-import { AiOutlineClose } from "react-icons/ai";
-import EmojiPicker from "emoji-picker-react";
-import { GrTransaction } from "react-icons/gr";
-import {
-  AddTransaction,
-  DeleteDudgetId,
-  DeleteTransactionId,
-} from "@/app/actions/page";
+import { ArrowLeftRight, Trash, X } from "lucide-react";
+
+import { AddTransaction, DeleteDudgetId, DeleteTransactionId } from "@/app/actions/page";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
@@ -18,52 +12,35 @@ const BudgetIdPage = ({ budget }: { budget: IBudget }) => {
   const navigate = useRouter();
   const [myTransaction, setMytransaction] = useState<string>("");
   const [myAmount, setMyAmount] = useState<string>("");
-  const [emoji, setEmoji] = useState<string>("");
-  const [showEmoji, setShowEmoji] = useState<boolean>(false);
-  const handleSelectEmoji = (emojiObject: { emoji: string }) => {
-    setEmoji(emojiObject.emoji);
-    setShowEmoji(!showEmoji);
-  };
 
   const handleSubmitTransaction = async (e: FormEvent) => {
     e.preventDefault();
-    if (!myTransaction)
-      return toast.error("veuillez remplir le champ : nom de la transaction");
-    if (!myAmount)
-      return toast.error(
-        "veuillez  remplir le champ : montant de la transaction"
-      );
-    if (!emoji) return toast.error("ajouter un emoji");
+    if (!myTransaction) return toast.error("veuillez remplir le champ : nom de la transaction");
+    if (!myAmount) return toast.error("veuillez  remplir le champ : montant de la transaction");
     const amount = parseInt(myAmount);
     if (budget.transactions) {
-      const totalTransactions = budget.transactions.reduce(
-        (accu, transaction) => {
-          return accu + transaction.amount;
-        },
-        0
-      );
+      const totalTransactions = budget.transactions.reduce((accu, transaction) => {
+        return accu + transaction.amount;
+      }, 0);
       if (amount + totalTransactions > budget.amount) {
-        return toast.error(
-          "le montant de votre transaction dépasse votre budget"
-        );
+        return toast.error("le montant de votre transaction dépasse votre budget");
       }
     }
     try {
       await AddTransaction({
         description: myTransaction,
         amount,
-        emoji,
         budgetId: budget.id,
       });
+      setMytransaction("");
+      setMyAmount("");
     } catch (error: any) {
       console.log(error);
     }
   };
 
   const handleDeleteTransaction = async (id: string) => {
-    const confirmDeleteTransaction = window.confirm(
-      "Etes vous sure de vouloir suprrimer cette transaction ?"
-    );
+    const confirmDeleteTransaction = window.confirm("Etes vous sure de vouloir suprrimer cette transaction ?");
     try {
       if (confirmDeleteTransaction) {
         await DeleteTransactionId(id);
@@ -77,9 +54,7 @@ const BudgetIdPage = ({ budget }: { budget: IBudget }) => {
   };
 
   const handleDeleteBudget = async () => {
-    const confirmDeleteBudget = window.confirm(
-      "Etes vous sure de vouloir suprrimer ce budget ?"
-    );
+    const confirmDeleteBudget = window.confirm("Etes vous sure de vouloir suprrimer ce budget ?");
     try {
       if (confirmDeleteBudget) {
         await DeleteDudgetId(budget.id);
@@ -94,26 +69,19 @@ const BudgetIdPage = ({ budget }: { budget: IBudget }) => {
   };
 
   return (
-    <div className="my-16 p-4 flex flex-col lg:flex-row lg:gap-4 gap-16">
+    <div className="my-[80px] w-full py-16 min-h-[calc(100vh_-_240px)] flex flex-col lg:flex-row lg:gap-4 gap-16">
       <div className="w-full lg:w-1/2">
         <div>
           <BudgetItemCard budget={budget} />
           <div className="py-8 xs:max-w-[500px] w-full flex justify-end items-center m-auto">
-            <button
-              onClick={handleDeleteBudget}
-              className="px-4 h-12 bg-indigo-600 text-white shadow-xl rounded-full shadow-indigo-600/30  hover:bg-indigo-600/90 flex justify-center items-center gap-4 transition-opacity active:scale-95"
-            >
-              Supprimer le budget <FaTrash />
+            <button onClick={handleDeleteBudget} className="px-4 h-12 bg-indigo-600 text-white shadow-xl rounded-full shadow-indigo-600/30  hover:bg-indigo-600/90 flex justify-center items-center gap-4 transition-opacity active:scale-95">
+              Supprimer le budget <Trash />
             </button>
           </div>
         </div>
-        <div className="py-8 max-w-[500px] flex flex-col mx-auto gap-4 border-2 rounded-lg p-4">
-          <h2 className="py-4 text-center text-xl">Ajoutez votre dépense</h2>
+        <div className="py-8 max-w-[500px] flex flex-col mx-auto gap-4 border-2 rounded-lg p-8">
           <div className="flex justify-end items-center gap-4"></div>
-          <form
-            onSubmit={handleSubmitTransaction}
-            className="py-4 w-full flex flex-col justify-center items-center gap-6"
-          >
+          <form onSubmit={handleSubmitTransaction} className="py-4 w-full flex flex-col justify-center items-center gap-6">
             <label className="w-full">
               <input
                 name="nom_transaction"
@@ -134,46 +102,8 @@ const BudgetIdPage = ({ budget }: { budget: IBudget }) => {
                 onChange={(e) => setMyAmount(e.target.value)}
               />
             </label>
-            <div className="w-full flex justify-center items-center">
-              {!showEmoji ? (
-                <>
-                  {emoji ? (
-                    <div className="w-full bg-transparent border-2 border-secondary text-center py-4 relative rounded-full">
-                      <AiOutlineClose
-                        onClick={() => setEmoji("")}
-                        className="absolute top-1/2 right-4 -translate-y-1/2 cursor-pointer"
-                      />
-                      {emoji}
-                    </div>
-                  ) : (
-                    <button
-                      onClick={() => setShowEmoji(!showEmoji)}
-                      className="w-full bg-gray-200 text-black h-12 rounded-lg border-2 shadow-md active:scale-95"
-                    >
-                      Ajouter un emoji
-                    </button>
-                  )}
-                </>
-              ) : (
-                <div className="w-full h-full p-2 mx-auto relative">
-                  <button className="px-2">
-                    <AiOutlineClose
-                      className="absolute top-2 right-2 cursor-pointer"
-                      onClick={() => setShowEmoji(!showEmoji)}
-                    />
-                  </button>
-                  <EmojiPicker
-                    width={"100%"}
-                    height={400}
-                    onEmojiClick={handleSelectEmoji}
-                  ></EmojiPicker>
-                </div>
-              )}
-            </div>
             <div className="w-full py-4">
-              <button className="w-full h-12 bg-indigo-600 text-white shadow-xl rounded-full  shadow-indigo-600/30  hover:bg-indigo-600/90 transition-opacity active:scale-95">
-                Ajoutez votre dépense
-              </button>
+              <button className="w-full h-12 bg-indigo-600 text-white shadow-xl rounded-full  shadow-indigo-600/30  hover:bg-indigo-600/90 transition-opacity active:scale-95">Ajoutez votre dépense</button>
             </div>
           </form>
         </div>
@@ -182,7 +112,7 @@ const BudgetIdPage = ({ budget }: { budget: IBudget }) => {
       <div className="w-full lg:w-1/2 px-4 overflow-auto">
         {budget.transactions?.length === 0 ? (
           <div className="w-full text-center">
-            <h2>Il n'y a pas encore de dépenses.</h2>
+            <h2>Il n'y a pas aucun transaction.</h2>
           </div>
         ) : (
           <table className="w-full table-auto text-sm tracking-tight mx-auto divide-y-2">
@@ -201,7 +131,7 @@ const BudgetIdPage = ({ budget }: { budget: IBudget }) => {
                 return (
                   <tr key={i}>
                     <td>
-                      <GrTransaction className="" />
+                      <ArrowLeftRight className="" />
                     </td>
                     <td className="p-4">-{t.amount} €</td>
                     <td className="p-4 capitalize">{t.description}</td>
@@ -219,12 +149,8 @@ const BudgetIdPage = ({ budget }: { budget: IBudget }) => {
                       })}
                     </td>
                     <td className="p-4">
-                      <button
-                        type="button"
-                        onClick={() => handleDeleteTransaction(t.id)}
-                        className="active:scale-95"
-                      >
-                        <FaTrash />
+                      <button type="button" onClick={() => handleDeleteTransaction(t.id)} className="active:scale-95">
+                        <Trash />
                       </button>
                     </td>
                   </tr>

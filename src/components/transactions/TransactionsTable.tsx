@@ -10,7 +10,7 @@ interface ItransactionsProps {
 
 const TransactionsTable = ({ transactions }: ItransactionsProps) => {
   return (
-    <table className="w-full table-auto  divide-y-2 text-sm font-normal">
+    <table className="w-full table-auto divide-y-2 text-sm font-normal">
       <thead>
         <tr className="">
           <th className="p-4"></th>

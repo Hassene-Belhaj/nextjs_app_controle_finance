@@ -315,3 +315,32 @@ export async function GetLastBudgets(email: string) {
     console.error("Erreur lors du téléchargement des derniers budgets", error);
   }
 }
+
+export async function Last10transactions(email: string) {
+  try {
+    const lastTransactions = await prisma.transaction.findMany({
+      where: {
+        Budget: {
+          user: {
+            email,
+          },
+        },
+      },
+      orderBy: {
+        createdAT: "desc",
+      },
+      take: 10,
+      include: {
+        Budget: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
+
+    return lastTransactions;
+  } catch (error) {
+    console.error("Erreur lors de la récupération des dernières transactions: ", error);
+  }
+}

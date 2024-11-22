@@ -47,8 +47,8 @@ const Navbar = () => {
   });
 
   return (
-    <nav className="fixed top-0 left-0 w-full h-20 md:h-20 bg-background m-auto z-50">
-      <div className={`${navBar ? "border-2 shadow-lg" : null} max-w-[1920px] h-full bg-background flex justify-between m-auto items-center gap-4 px-4 md:px-8 relative z-50`}>
+    <nav className={`fixed top-0 left-0 w-full h-20 md:h-20 bg-background m-auto z-50 ${navBar ? "border-2 shadow-lg" : null}`}>
+      <div className="max-w-[1920px] h-full bg-background flex justify-between m-auto items-center gap-4 px-4 md:px-8 relative z-50">
         <div>
           <Link href="/">
             <h2 className="bg-indigo-600 text-white text-sm px-6 py-2 md:text-xl rounded-bl-full rounded-tr-full shadow-lg shadow-indigo-600/40">Budget</h2>
